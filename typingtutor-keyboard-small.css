@@ -1,0 +1,12 @@
+#help-text {font-size: x-large;text-align: center;}
+.big	{font-family: monospace;font-size: x-large;white-space: pre-wrap;text-align: center;}
+.board span {background-color: white;border-color: white;border-style: inset; border-width: 2px 1px 1px 2px;margin: 2px;padding: 2px;}
+.todo {background-color: gold;   border: 1px outset blanchedAlmond;color: gray;font-weight: normal}
+.future	{color: gray; background-color:pink; font-weight: normal}
+.prompt {margin: 1ex 1ex 1ex 1ex}
+.board	{text-align: center;color: #ccc; font-family: monospace;font-size: large; width: 50ex;margin: auto; padding: 1em ;}
+.row1	{margin: 0;} .row2	{margin: 9px 0 0 1em;} .row3 {margin: 9px 0 0 -1em;}
+.pressed {color: red; } .silent	{color: #666;} .target {color: #530;border-style: outset !important}
+.echo {color: gray; margin: 1ex 1ex 1ex 1ex}
+.instructions {padding: 0 0 0 0; font-size: small}
+.legal {padding: 3ex 0 0 0; font-size: x-small; font-style:italic}

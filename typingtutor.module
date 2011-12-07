@@ -1,0 +1,159 @@
+<?php
+
+/**
+ * @file
+ * adds a formatter for text fields that creates a facebook button
+ *
+ */
+ 
+ /**
+ * Implements hook_field_formatter_info().
+ */
+function typingtutor_field_formatter_info() {
+  return array(
+    'typingtutor_keyboard_formatter' => array( //Machine name of the formatter
+      'label' => t('Keyboard for the Typing Tutor'),
+      'field types' => array('text_long'), //This will only be available to text_long fields
+      'settings'  => array( //Array of the settings we'll create
+        'keyboard' => 'small', //give a default value for when the form is first loaded
+      ),
+    ),
+    'typingtutor_practice_formatter' => array( //Machine name of the formatter
+      'label' => t('Practice Text for the Typing Tutor'),
+      'field types' => array('text_long'), //This will only be available to text_long fields
+    ),
+  );
+}
+
+function typingtutor_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  //This gets the view_mode where our settings are stored
+  $display = $instance['display'][$view_mode];
+  //This gets the actual settings
+  $settings = $display['settings'];
+  //Initialize the element variable
+  $element = array();
+  //Add your select box
+  $element['keyboard'] = array(
+    '#type'           => 'select',                           // Use a select box widget
+    '#title'          => t('Keyboard Size'),                   // Widget label
+    '#description'    => t('Select what size of keyboard'), // Helper text
+    '#default_value'  => $settings['keyboard'],              // Get the value if it's already been set
+    '#options'        => array(
+      'small'  => 'Small',
+      'medium' => 'Medium',
+      'large'  => 'Large',
+    ),
+  );
+
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function typingtutor_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  if ($display['type'] == 'typingtutor_keyboard_formatter') {
+    $settings = $display['settings'];
+    $summary = t('Use a @size keyboard', array(
+      '@size'     => $settings['keyboard'],
+    )); // we use t() for translation and placeholders to guard against attacks
+  } else  {
+    $summary = t('Typing Tutor Practice Text');
+  }
+  return $summary;
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function typingtutor_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  
+  $practice_text = "";$l = (int) 0;$i = (int) 0; $output = "";  $element = array(); // Initialize the var
+  
+  if ($display['type'] == 'typingtutor_keyboard_formatter') {
+	  $settings = $display['settings']; // get the settings
+    $size = $settings['keyboard']; // The Size setting selected in the settings form
+    drupal_add_css(drupal_get_path('module', 'typingtutor') . '/typingtutor-keyboard-' . $size . '.css');  
+    foreach ($items as $delta => $item) {
+      $layout = $item['safe_value']; // Getting the actual value
+    }
+    if(isset($layout)) {
+      $layout = str_replace('&#039;',chr(39),$layout);
+      $layout =  utf8_decode($layout);
+      $in_keyborad = array();
+
+      $output .= '<div id="board" class="board">';
+      foreach(explode("\r\n", $layout) as $line) {
+        $output .= '<div id="row' . ++$l . '" class="row' . $l . '">';
+        for ($i = 0; $i < strlen($line); ++$i){
+          if ($line{$i} == " ") {
+           $output .= " &nbsp; ";
+          } else {
+	         $html_code = "&#". str_pad(ord(substr($line,$i,1)), 3, "0", STR_PAD_LEFT). ";";
+	
+           $output .= "<span id='code".typingtutor_mapToBoard(ord(substr($line,$i,1)))."'>". htmlentities(substr($line,$i,1)) ."</span>"  ;
+           $in_keyborad[ord(substr($line,$i,1))] = typingtutor_mapToBoard(ord(substr($line,$i,1)));
+          } 
+        }
+        $output .= '</div>';
+      }
+
+      drupal_add_js("in_keyborad = " . json_encode($in_keyborad), 'inline');
+      $output .= '</div><div id="echo" class="echo">[ ]</div><textarea> 4 the iphone </textarea><div><button id="skip" class="button" name="skip"> skip to next line ("enter" key is shortcut)</button><button id="back" class="button" name="back">back to previous line</button></div>Count: <span id="count">0 chars</span> Accuracy: <span id="accuracy">n/a</span> Speed: <span id="speed">0 chars/min</span> <button id="reset" class="button" name="reset">reset</button>';
+      $element[0]['#markup'] = $output; // Assign it to the #markup of the element
+    }
+  } else {
+
+    foreach ($items as $delta => $item) {
+      $practice_text = $item['safe_value']; // Getting the actual value
+    }
+
+    if(isset($practice_text)) {
+      
+      $practice_text = str_replace('&#039;',chr(39),$practice_text);
+      $practice_text = str_replace('&quot;','"',$practice_text);
+      $practice_text = str_replace('&#039;',chr(39),$practice_text);
+      $practice_text = str_replace('&#039;',chr(39),$practice_text);
+    
+      $output .= "function get_data_typingtutor() {";
+      
+      $practice_text = explode("\r\n", $practice_text);
+      $new = 1;
+      foreach($practice_text as $line) {
+        
+        if (trim($line) != "") {
+          $part = explode("|", $line, 2);
+          
+          if (strtolower(trim($part[0])) == 'h' ) {
+            if ($new) {
+              $output .= 'help_array[ga] = '.json_encode(array_pop($part)) .';';
+              $new = 0;
+            } else {
+              $output .= 'help_array[ga] += "<br />"+'.json_encode(array_pop($part)) .';';
+            }
+          } else {
+            $output .= 'garray[ga++] = '.json_encode(array_pop($part)) .';';
+           $new = 1;
+          }
+        }  
+      }
+    
+      $output .= '};';
+    
+      drupal_add_js($output, 'inline');
+      drupal_add_js(drupal_get_path('module', 'typingtutor') . '/typingtutor.js', 'file');
+    
+      $output = "<div id='help-text' > </div> <div id='pattern' class='big'> </div>";
+      $output .= '<div id="prompt" class="prompt" type=text> </div>';
+      
+      $element[0]['#markup'] = $output;
+  
+    }
+  }
+  return $element;
+}
+function typingtutor_mapToBoard($key_code) {
+	if (($key_code>=97)&&($key_code<=122)) return ($key_code-32);
+	return $key_code;
+}
