@@ -13,7 +13,9 @@ jQuery.typing = {
 	gtotal : 0,
 	gtime : 0,
 	gkeytime : 0,
-	ghelp_array : {}
+	ghelp_array : {},
+	error_in_same_line :0,
+	tolerance:3
 };
 
 
@@ -42,8 +44,6 @@ function setup() {
   }
   next();
 }
-
-
 
 function setPatternInit() {
 
@@ -91,7 +91,6 @@ function setPattern() {
 	}
 }
 
-
 function mapToBoard(code) {
 	if ((code>=97)&&(code<=122)) return (code-32);
 	if ((code>=65)&&(code<=90)) return code;
@@ -100,7 +99,6 @@ function mapToBoard(code) {
   if ((in_keyborad[""+code])) return ( 1 * in_keyborad[""+code]);
   return 0;
 }
-
 
 function setBoard() {
 
@@ -163,7 +161,14 @@ function nextPattern() {
 	
 	window.location.hash = "#line=" + jQuery.typing.garrayIndex;
 	
-	jQuery.typing.gtext = jQuery.typing.garray[jQuery.typing.garrayIndex]; jQuery.typing.gindex = 0;
+	if (jQuery.typing.error_in_same_line > jQuery.typing.tolerance ) {
+  	jQuery.typing.gtext = jQuery.typing.garray[--jQuery.typing.garrayIndex];
+	} else {
+		jQuery.typing.gtext = jQuery.typing.garray[jQuery.typing.garrayIndex];
+	}
+
+	
+	jQuery.typing.gindex = 0;
 	if (jQuery.typing.ghelp_array[jQuery.typing.garrayIndex]) document.getElementById("help-text").innerHTML = jQuery.typing.ghelp_array[jQuery.typing.garrayIndex];
 	jQuery.typing.gpressed = 0; 
 	
@@ -363,8 +368,6 @@ function filterCode(code) { //from key press as ascii char code (0 to ignore)
 	return code;
 }
 
-
-
 function capsLockFilter(e, pressed) { //#b many problems making this cross browser!
 
 	//#b e.modifiers known only on early mozilla (which does not know standard e.shiftkey)?
@@ -375,7 +378,6 @@ function capsLockFilter(e, pressed) { //#b many problems making this cross brows
 		 || ((pressed > 96) && (pressed < 123) && (shifted)));
 	if (locked) alert("caps lock!");
 }
-
 
 function down(evt) { //#b
 
@@ -390,7 +392,6 @@ function down(evt) { //#b
 	return false; //#b nuisance keys - backspace etc on ie (no effect for capslock!!)
 
 }
-
 
 function press(evt) { //#b
 
@@ -442,6 +443,7 @@ function press(evt) { //#b
 		if (jQuery.typing.gindex==jQuery.typing.gtext.length) {
 			nextPattern();
 			setPatternInit();
+			jQuery.typing.error_in_same_line = 0;
 		}
 		else setPattern();
 
@@ -454,6 +456,7 @@ function press(evt) { //#b
 	else {
 		setEcho(c, false);
 		updateScore(false);
+		jQuery.typing.error_in_same_line++
 		setPattern()
 	}
 
