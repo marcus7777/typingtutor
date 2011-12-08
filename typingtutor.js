@@ -1,44 +1,46 @@
-var ga =0;
-var garray = new Array();
-var help_array = new Array();
-var garrayIndex = -1;
-var gtext = "";
-var gindex = 0;
-var goldPressed = 0; //previous pressed key code
-var goldTarget = 0; //previous target key code
-var gtarget = 0;
-var gpressed = 0;
-var ggood = 0;
-var gtotal = 0;
-var gtime = 0;
-var gkeytime = 0;
+
+jQuery.typing = {
+	ga :0,
+	garray : {},
+	garrayIndex : -1,
+	gtext : "",
+	gindex : 0,
+	goldPressed : 0, //previous pressed key code
+	goldTarget : 0, //previous target key code
+	gtarget : 0,
+	gpressed : 0,
+	ggood : 0,
+	gtotal : 0,
+	gtime : 0,
+	gkeytime : 0,
+	ghelp_array : {}
+};
+
 
 function setup() {
   setEvents();
   get_data_typingtutor();	
-  garrayIndex = -1;
+  jQuery.typing.garrayIndex = -1;
   
-     if((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
-       var alerts = 0;
-     } else {
-       var alerts = 1;
-     }
-     if(window.location.hash) {
-	   var searchString = window.location.hash;
-	   // strip off the leading '#'
-	   searchString = searchString.substring(1);
+  if((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
+    var alerts = 0;
+  } else {
+    var alerts = 1;
+  }
+  if(window.location.hash) {
+	  var searchString = window.location.hash;
+	  // strip off the leading '#'
+	  searchString = searchString.substring(1);
+    var nvPairs = searchString.split("&");
 
-	   var nvPairs = searchString.split("&");
-
-	   for (i = 0; i < nvPairs.length; i++)
-	   {
-	     var nvPair = nvPairs[i].split("=");
-	     var name = nvPair[0];
-	     var value = nvPair[1];
-	     if ('line' == name)  garrayIndex = 1 * value;
-	   }
-	 }
-     next();
+    for (i = 0; i < nvPairs.length; i++) {
+      var nvPair = nvPairs[i].split("=");
+      var name = nvPair[0];
+      var value = nvPair[1];
+      if ('line' == name)  jQuery.typing.garrayIndex = (1 * value) - 1;
+    }
+  }
+  next();
 }
 
 
@@ -58,11 +60,11 @@ function setPatternInit() {
 	}
 
 	var cname = "done";
-	for (j=0; j<gtext.length; j++) {
-		var ch = gtext.charAt(j); 
+	for (j=0; j<jQuery.typing.gtext.length; j++) {
+		var ch = jQuery.typing.gtext.charAt(j); 
 
-		if (j>gindex) cname = "future";
-		else if (j==gindex) cname = "todo";
+		if (j>jQuery.typing.gindex) cname = "future";
+		else if (j==jQuery.typing.gindex) cname = "todo";
 
 		var kid = document.createElement("span");
 		kid.className = cname;
@@ -80,9 +82,9 @@ function setPattern() {
 
 	var cname = "done";
 
-	for (j=0; j<gtext.length; j++) {
-		if (j>gindex) cname = "future";
-		else if (j==gindex) cname = "todo";
+	for (j=0; j<jQuery.typing.gtext.length; j++) {
+		if (j>jQuery.typing.gindex) cname = "future";
+		else if (j==jQuery.typing.gindex) cname = "todo";
 
 		var kid = kids[j];
 		kid.className = cname;
@@ -93,10 +95,10 @@ function setPattern() {
 function mapToBoard(code) {
 	if ((code>=97)&&(code<=122)) return (code-32);
 	if ((code>=65)&&(code<=90)) return code;
-        if ((code==252)||(code==92)||(code==122)) return code // Umlaute
+  if ((code==252)||(code==92)||(code==122)) return code // Umlaute
 	if ((code==44)||(code==46)||(code==47)||(code==59)) return code;
-        if ((in_keyborad[""+code])) return ( 1 * in_keyborad[""+code]);
-        return 0;
+  if ((in_keyborad[""+code])) return ( 1 * in_keyborad[""+code]);
+  return 0;
 }
 
 
@@ -107,9 +109,8 @@ function setBoard() {
 	var c;
 	var s;
 
-
-	if (goldTarget!=0) {
-		c = mapToBoard(goldTarget);
+	if (jQuery.typing.goldTarget!=0) {
+		c = mapToBoard(jQuery.typing.goldTarget);
 		if (c!=0) {
 			letter = "code"+c;
 			elt = document.getElementById(letter);
@@ -117,8 +118,8 @@ function setBoard() {
 			elt.className = s;
 		}
 	}
-	if (goldPressed!=0) {
-		c = mapToBoard(goldPressed);
+	if (jQuery.typing.goldPressed!=0) {
+		c = mapToBoard(jQuery.typing.goldPressed);
 		if (c!=0) {
 			letter = "code"+c;
 			elt = document.getElementById(letter);
@@ -126,29 +127,28 @@ function setBoard() {
 			elt.className = s;
 		}
 	}
-
-	if (gtarget!=0) {
-		c = mapToBoard(gtarget);
+	if (jQuery.typing.gtarget!=0) {
+		c = mapToBoard(jQuery.typing.gtarget);
 		if (c!=0) {
 			letter = "code"+c;
 			elt = document.getElementById(letter);
 			s = "target";
 			elt.className = s;
-                        if (elt.style.opacity == "" ) {
-                          elt.style.opacity = 1;
-                        } else if (elt.style.opacity > 0) {
-                          elt.style.opacity = elt.style.opacity - .05;
-                        } 
+      if (elt.style.opacity == "" ) {
+        elt.style.opacity = 1;
+      } else if (elt.style.opacity > 0) {
+        elt.style.opacity = elt.style.opacity - .05;
+      } 
 		}
 	}
-	if (gpressed!=0) {
-		c = mapToBoard(gpressed);
+	if (jQuery.typing.gpressed!=0) {
+		c = mapToBoard(jQuery.typing.gpressed);
 		if (c!=0) {
 			letter = "code"+c;
 			elt = document.getElementById(letter);
 			s = "pressed";
 			elt.className = s;
-                        elt.style.opacity = 1; 
+      elt.style.opacity = 1; 
 		}
 	}
 
@@ -156,34 +156,33 @@ function setBoard() {
 
 function nextPattern() {
 	
-	goldTarget = gtarget;
-	goldPressed = gpressed;
+	jQuery.typing.goldTarget = jQuery.typing.gtarget;
+	jQuery.typing.goldPressed = jQuery.typing.gpressed;
 
-	if (++garrayIndex == garray.length) garrayIndex = 0;
+	if (++jQuery.typing.garrayIndex == jQuery.typing.garray.length) jQuery.typing.garrayIndex = 0;
 	
-	window.location.hash = "#line=" + garrayIndex;
+	window.location.hash = "#line=" + jQuery.typing.garrayIndex;
 	
-	gtext = garray[garrayIndex]; gindex = 0;
-	if (help_array[garrayIndex]) document.getElementById("help-text").innerHTML = help_array[garrayIndex];
-	gpressed = 0; 
+	jQuery.typing.gtext = jQuery.typing.garray[jQuery.typing.garrayIndex]; jQuery.typing.gindex = 0;
+	if (jQuery.typing.ghelp_array[jQuery.typing.garrayIndex]) document.getElementById("help-text").innerHTML = jQuery.typing.ghelp_array[jQuery.typing.garrayIndex];
+	jQuery.typing.gpressed = 0; 
 	
 	setPrompt();
 }
 
 function prevPattern() {
 
-	goldTarget = gtarget;
-	goldPressed = gpressed;
+	jQuery.typing.goldTarget = jQuery.typing.gtarget;
+	jQuery.typing.goldPressed = jQuery.typing.gpressed;
 
-	if (--garrayIndex < 0) garrayIndex = garray.length - 1;
-	gtext = garray[garrayIndex]; gindex = 0;
-	gpressed = 0; 
+	if (--jQuery.typing.garrayIndex < 0) jQuery.typing.garrayIndex = jQuery.typing.garray.length - 1;
+	jQuery.typing.gtext = jQuery.typing.garray[jQuery.typing.garrayIndex]; jQuery.typing.gindex = 0;
+	jQuery.typing.gpressed = 0; 
 	
 	setPrompt();
 }
 
 function next() {
-
 	nextPattern();
 	setPatternInit();
 	setBoard(); 
@@ -195,19 +194,15 @@ function prev() {
 	setBoard();
 }
 
-
 function skip(e) {
 	next();
 	return false;
 }
 
-
 function back(e) {
 	prev();
 	return false;
 }
-
-
 
 function setEcho(c, isOK) {
 	var s;
@@ -228,15 +223,15 @@ function setEcho(c, isOK) {
 }
 
 function setPrompt() {
-	var ch = gtext.charAt(gindex);
-	gtarget = ch.charCodeAt(0);
+	var ch = jQuery.typing.gtext.charAt(jQuery.typing.gindex);
+	jQuery.typing.gtarget = ch.charCodeAt(0);
 	/* soundManager.stopAll();
 	
-	if ((gtarget>=97)&&(gtarget<=122)) {
-          soundManager.play( "code"+(gtarget-32) );
-        } else {
-          soundManager.play( "code"+(gtarget) );
-        } */
+	if ((jQuery.typing.gtarget>=97)&&(jQuery.typing.gtarget<=122)) {
+    soundManager.play( "code"+(jQuery.typing.gtarget-32) );
+  } else {
+    soundManager.play( "code"+(jQuery.typing.gtarget) );
+  } */
           
 }
 
@@ -247,12 +242,12 @@ function adjustStatistics(ch) {
 
 function updateSpeed(ok) {
 	var t = (new Date()).getTime();
-	var dt = (t-gtime);
-	gtime = t;
+	var dt = (t-jQuery.typing.gtime);
+	jQuery.typing.gtime = t;
 	if (dt > 5000) return; //ignore sleepy user
-	gkeytime += dt;
+	jQuery.typing.gkeytime += dt;
 
-	var s = (0.5+ggood*60*1000/gkeytime).toFixed(0) + " chars/min";
+	var s = (0.5+jQuery.typing.ggood*60*1000/jQuery.typing.gkeytime).toFixed(0) + " chars/min";
 	var elt = document.getElementById("speed");
 	var txt = document.createTextNode(s); //#b
 	if (elt.hasChildNodes()) {
@@ -263,12 +258,12 @@ function updateSpeed(ok) {
 
 
 function updateScore(ok) {
-	if (ok) ggood++;
-	gtotal++;
+	if (ok) jQuery.typing.ggood++;
+	jQuery.typing.gtotal++;
 
 	updateSpeed(ok);
 
-	var s = ggood.toFixed(0) + " chars";
+	var s = jQuery.typing.ggood.toFixed(0) + " chars";
 	var elt = document.getElementById("count");
 
 	var txt = document.createTextNode(s); //#b
@@ -278,7 +273,7 @@ function updateScore(ok) {
 	else elt.appendChild(txt); 
 
 
-	s = (ggood*100/gtotal).toFixed(1) + "%";
+	s = (jQuery.typing.ggood*100/jQuery.typing.gtotal).toFixed(1) + "%";
 	elt = document.getElementById("accuracy");
 
 	txt = document.createTextNode(s); //#b
@@ -292,8 +287,8 @@ function updateScore(ok) {
 
 
 function reset(e) {
-	ggood = 0; gtotal = 0;
-	gtime = 0; gkeytime = 0;
+	jQuery.typing.ggood = 0; jQuery.typing.gtotal = 0;
+	jQuery.typing.gtime = 0; jQuery.typing.gkeytime = 0;
 
 
 	var elt = document.getElementById("count");
@@ -347,7 +342,7 @@ function filterKeyCode(code) { //from key down (0 to ignore)
 	//note: user must have num lock set if they want to use keypad numbers
 
 	if ((code>=65)&&(code<=90)) return code; //alpha 
-        if ((code==252)||(code==92)||(code==122)) return code; // Umlaute
+  if ((code==252)||(code==92)||(code==122)) return code; // Umlaute
 	if ((code>=48)&&(code<=57)) return code; //numberic
 	if (code==32) return code; //blank
 	if ((code>=96)&&(code<=105)) return code; //number pad digits
@@ -361,9 +356,9 @@ function filterKeyCode(code) { //from key down (0 to ignore)
 
 
 function filterCode(code) { //from key press as ascii char code (0 to ignore)
-	if ( (code==13) || (code==16) || (code==20) ) return code; //enter and shift and space are allowed
+	if ((code==13)||(code==16)||(code==20)) return code; //enter and shift and space are allowed
 	if (code<32) return 0;
-        if ((code==252)||(code==92)||(code==122)) return code; // Umlaute
+  if ((code==252)||(code==92)||(code==122)) return code; // Umlaute
 //	if (code>=127) return 0;
 	return code;
 }
@@ -434,23 +429,23 @@ function press(evt) { //#b
 	capsLockFilter(e, pressed); //hmm
 	
 	var c = String.fromCharCode(pressed); //ie from ascii code
-	var ch = gtext.charAt(gindex);
+	var ch = jQuery.typing.gtext.charAt(jQuery.typing.gindex);
 	var ok = (c==ch);
 
-	goldPressed = gpressed;
-	gpressed = pressed;
-	goldTarget = gtarget;
+	jQuery.typing.goldPressed = jQuery.typing.gpressed;
+	jQuery.typing.gpressed = pressed;
+	jQuery.typing.goldTarget = jQuery.typing.gtarget;
 
 	if (ok) {
-		gindex++;
+		jQuery.typing.gindex++;
 
-		if (gindex==gtext.length) {
+		if (jQuery.typing.gindex==jQuery.typing.gtext.length) {
 			nextPattern();
 			setPatternInit();
 		}
 		else setPattern();
 
-		gpressed = 0;
+		jQuery.typing.gpressed = 0;
 		setPrompt();
 		setEcho(c, true);
 		updateScore(true);

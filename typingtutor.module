@@ -127,13 +127,13 @@ function typingtutor_field_formatter_view($entity_type, $entity, $field, $instan
           
           if (strtolower(trim($part[0])) == 'h' ) {
             if ($new) {
-              $output .= 'help_array[ga] = '.json_encode(array_pop($part)) .';';
+              $output .= 'jQuery.typing.ghelp_array[jQuery.typing.ga] = '.json_encode(array_pop($part)) .';';
               $new = 0;
             } else {
-              $output .= 'help_array[ga] += "<br />"+'.json_encode(array_pop($part)) .';';
+              $output .= 'jQuery.typing.ghelp_array[jQuery.typing.ga] += "<br />"+'.json_encode(array_pop($part)) .';';
             }
           } else {
-            $output .= 'garray[ga++] = '.json_encode(array_pop($part)) .';';
+            $output .= 'jQuery.typing.garray[jQuery.typing.ga++] = '.json_encode(array_pop($part)) .';';
            $new = 1;
           }
         }  
