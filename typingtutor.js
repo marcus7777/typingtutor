@@ -1,25 +1,13 @@
-
 jQuery.typing = {
-	ga :0,
-	garray : {},
-	garrayIndex : -1,
-	gtext : "",
-	gindex : 0,
-	goldPressed : 0, //previous pressed key code
+	ga :0,	garray : {},	garrayIndex : -1,	gtext : "",
+	gindex : 0,	goldPressed : 0, //previous pressed key code
 	goldTarget : 0, //previous target key code
-	gtarget : 0,
-	gpressed : 0,
-	ggood : 0,
-	gtotal : 0,
-	gtime : 0,
-	gkeytime : 0,
-	ghelp_array : {},
-	error_in_same_line :0,
-	tolerance:3,
-	tolerance_array:{},
+	gtarget : 0,	gpressed : 0,	ggood : 0,
+	gtotal : 0,	gtime : 0,	gkeytime : 0,
+	ghelp_array : {},	error_in_same_line :0,
+	tolerance:3,	tolerance_array:{},
 	mix_array: {}
 };
-
 
 function setup() {
   setEvents();
@@ -28,6 +16,7 @@ function setup() {
   
   if((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
     var alerts = 0;
+    
   } else {
     var alerts = 1;
   }
@@ -43,6 +32,11 @@ function setup() {
       var value = nvPair[1];
       if ('line' == name)  jQuery.typing.garrayIndex = (1 * value) - 1;
     }
+    for (n = 0; n <= jQuery.typing.garrayIndex ; n++ ) {
+	    if (jQuery.typing.ghelp_array[n]) document.getElementById("help-text").innerHTML = jQuery.typing.ghelp_array[n];
+	    if (jQuery.typing.tolerance_array[n]) jQuery.typing.tolerance = jQuery.typing.tolerance_array[n];	
+    }
+		
   }
   next();
 }
@@ -76,7 +70,6 @@ function setPatternInit() {
 		pat.appendChild(kid);
 	}
 }
-
 function setPattern() {
 
 	var pat = document.getElementById("pattern");
@@ -92,7 +85,6 @@ function setPattern() {
 		kid.className = cname;
 	}
 }
-
 function mapToBoard(code) {
 	if ((code>=97)&&(code<=122)) return (code-32);
 	if ((code>=65)&&(code<=90)) return code;
@@ -101,7 +93,6 @@ function mapToBoard(code) {
   if ((in_keyborad[""+code])) return ( 1 * in_keyborad[""+code]);
   return 0;
 }
-
 function setBoard() {
 
 	var letter;
@@ -153,7 +144,6 @@ function setBoard() {
 	}
 
 }
-
 function nextPattern() {
 	
 	jQuery.typing.goldTarget = jQuery.typing.gtarget;
@@ -188,7 +178,6 @@ function nextPattern() {
 	
 	setPrompt();
 }
-
 function prevPattern() {
 
 	jQuery.typing.goldTarget = jQuery.typing.gtarget;
@@ -200,29 +189,24 @@ function prevPattern() {
 	
 	setPrompt();
 }
-
 function next() {
 	nextPattern();
 	setPatternInit();
 	setBoard(); 
 }
-
 function prev() {
 	prevPattern();
 	setPatternInit();
 	setBoard();
 }
-
 function skip(e) {
 	next();
 	return false;
 }
-
 function back(e) {
 	prev();
 	return false;
 }
-
 function setEcho(c, isOK) {
 	var s;
 	if (c<' ') c=' ';
@@ -245,7 +229,6 @@ function setEcho(c, isOK) {
 	}
 	else elt.appendChild(txt); 
 }
-
 function setPrompt() {
 	var ch = jQuery.typing.gtext.charAt(jQuery.typing.gindex);
 	jQuery.typing.gtarget = ch.charCodeAt(0);
@@ -258,12 +241,9 @@ function setPrompt() {
   } */
           
 }
-
 function adjustStatistics(ch) {
 	return; //could count errors by character
 }
-
-
 function updateSpeed(ok) {
 	var t = (new Date()).getTime();
 	var dt = (t-jQuery.typing.gtime);
@@ -279,8 +259,6 @@ function updateSpeed(ok) {
 	}
 	else elt.appendChild(txt); 
 }
-
-
 function updateScore(ok) {
 	if (ok) jQuery.typing.ggood++;
 	jQuery.typing.gtotal++;
@@ -306,10 +284,7 @@ function updateScore(ok) {
 	}
 	else elt.appendChild(txt); 
 
-
 }
-
-
 function reset(e) {
 	jQuery.typing.ggood = 0; jQuery.typing.gtotal = 0;
 	jQuery.typing.gtime = 0; jQuery.typing.gkeytime = 0;
@@ -339,7 +314,6 @@ function reset(e) {
 
 	return true;
 }
-
 function debugKey(evt) { //#b
 
 	var e = (window.event) ? window.event : evt; //#b
@@ -351,7 +325,6 @@ function debugKey(evt) { //#b
 
 	return false;
 }
-
 function setEvents() { //#b
 	document.onkeydown=down; //#b 
 	document.onkeypress=press;
@@ -359,8 +332,6 @@ function setEvents() { //#b
 	(document.getElementById('back')).onmousedown=back;
 	(document.getElementById('reset')).onmousedown=reset;  
 }
-
-
 function filterKeyCode(code) { //from key down (0 to ignore)
 
 	//note: user must have num lock set if they want to use keypad numbers
@@ -377,8 +348,6 @@ function filterKeyCode(code) { //from key down (0 to ignore)
 
 	return 0;
 }
-
-
 function filterCode(code) { //from key press as ascii char code (0 to ignore)
 	if ((code==13)||(code==16)||(code==20)) return code; //enter and shift and space are allowed
 	if (code<32) return 0;
@@ -386,7 +355,6 @@ function filterCode(code) { //from key press as ascii char code (0 to ignore)
 //	if (code>=127) return 0;
 	return code;
 }
-
 function capsLockFilter(e, pressed) { //#b many problems making this cross browser!
 
 	//#b e.modifiers known only on early mozilla (which does not know standard e.shiftkey)?
@@ -397,7 +365,6 @@ function capsLockFilter(e, pressed) { //#b many problems making this cross brows
 		 || ((pressed > 96) && (pressed < 123) && (shifted)));
 	if (locked) alert("caps lock!");
 }
-
 function down(evt) { //#b
 
 	var e = (window.event) ? window.event : evt; //#b
@@ -411,7 +378,6 @@ function down(evt) { //#b
 	return false; //#b nuisance keys - backspace etc on ie (no effect for capslock!!)
 
 }
-
 function press(evt) { //#b
 
 
@@ -484,11 +450,15 @@ function press(evt) { //#b
 function Mix(str){
     var s= str.split(' ');
     for(var i= 0; i<s.length;i++){
-       var A= s[i].split(''),c1= '',c3 = '' //A.shift(), c3= A.pop() || '';
+       var A= s[i].split(''),c1= '',c3 = '' ; //A.shift(), c3= A.pop() || '';
        while(A.length) c1+= A.splice(Math.floor(Math.random()*A.length), 1);
         s[i]= c1+c3;
     }
-    return s.join(' ');
+	  return Mix_Words(str);
 }
-
+function Mix_Words(s){
+  var A= s.split(' '),c= Array(),i=0;
+  while(A.length) c[i++]= A.splice(Math.floor(Math.random()*A.length), 1);
+  return jQuery.trim(c.join(' '));
+}
 jQuery(document).ready(function () { setup(); });
