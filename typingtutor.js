@@ -15,7 +15,9 @@ jQuery.typing = {
 	gkeytime : 0,
 	ghelp_array : {},
 	error_in_same_line :0,
-	tolerance:3
+	tolerance:3,
+	tolerance_array:{},
+	mix_array: {}
 };
 
 
@@ -162,14 +164,26 @@ function nextPattern() {
 	window.location.hash = "#line=" + jQuery.typing.garrayIndex;
 	
 	if (jQuery.typing.error_in_same_line > jQuery.typing.tolerance ) {
-  	jQuery.typing.gtext = jQuery.typing.garray[--jQuery.typing.garrayIndex];
+		if (--jQuery.typing.garrayIndex < 0) jQuery.typing.garrayIndex = jQuery.typing.garray.length - 1;
+		
+		if (jQuery.typing.mix_array[jQuery.typing.garrayIndex]) {
+			jQuery.typing.gtext = Mix(jQuery.typing.garray[jQuery.typing.garrayIndex]);
+		} else {
+			jQuery.typing.gtext = jQuery.typing.garray[jQuery.typing.garrayIndex];
+		}
+  	
 	} else {
 		jQuery.typing.gtext = jQuery.typing.garray[jQuery.typing.garrayIndex];
 	}
 
 	
 	jQuery.typing.gindex = 0;
+	//check for new help text
 	if (jQuery.typing.ghelp_array[jQuery.typing.garrayIndex]) document.getElementById("help-text").innerHTML = jQuery.typing.ghelp_array[jQuery.typing.garrayIndex];
+	
+	//check for new tolerance level
+	if (jQuery.typing.tolerance_array[jQuery.typing.garrayIndex]) jQuery.typing.tolerance = jQuery.typing.tolerance_array[jQuery.typing.garrayIndex];
+	
 	jQuery.typing.gpressed = 0; 
 	
 	setPrompt();
@@ -215,7 +229,12 @@ function setEcho(c, isOK) {
 
 	var s = "["+c+"]";
 	if (!isOK) {
-           s += " ..oops";
+		      if (++jQuery.typing.error_in_same_line > jQuery.typing.tolerance ) {
+				  	s += " ..oops you'll need to redo this one";
+					} else {
+						s += " ..oops "+(jQuery.typing.error_in_same_line)+" of "+jQuery.typing.tolerance;
+					}
+					
           /* soundManager.play('a'); */
         }
 
@@ -456,11 +475,20 @@ function press(evt) { //#b
 	else {
 		setEcho(c, false);
 		updateScore(false);
-		jQuery.typing.error_in_same_line++
 		setPattern()
 	}
 
    	setBoard();
 	return false;
 } 
+function Mix(str){
+    var s= str.split(' ');
+    for(var i= 0; i<s.length;i++){
+       var A= s[i].split(''),c1= '',c3 = '' //A.shift(), c3= A.pop() || '';
+       while(A.length) c1+= A.splice(Math.floor(Math.random()*A.length), 1);
+        s[i]= c1+c3;
+    }
+    return s.join(' ');
+}
+
 jQuery(document).ready(function () { setup(); });
