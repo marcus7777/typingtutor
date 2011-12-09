@@ -4,7 +4,7 @@
 .todo {background-color: gold;   border: 1px outset blanchedAlmond;color: gray;font-weight: normal}
 .future	{color: gray; background-color:pink; font-weight: normal}
 .prompt {margin: 1ex 1ex 1ex 1ex}
-.board	{text-align: center;color: #ccc; font-family: monospace;font-size: large; width: 50ex;margin: auto; padding: 1em ;}
+.board	{text-align: center;color: #ccc; font-family: monospace;font-size: xx-large; width: 50ex;margin: auto; padding: 1em ;}
 .row1	{margin: 0;} .row2	{margin: .7em 0 0 1em;} .row3 {margin: .7em 0 0 -1em;}
 .row4 {margin: .7em 0 0 -1em;}.row5 {margin: .7em 0 0 -1em;}
 .pressed {color: red; } .silent	{color: #666;} .target {color: #530;border-style: outset !important}
