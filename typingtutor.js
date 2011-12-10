@@ -459,7 +459,7 @@ jQuery(document).ready(function () {
   // let override
 	if(typeof TypingTutor_progress !== 'function') {
 		function TypingTutor_progress(t,n) {
-	    alert(((n/t)*100)+"%");
+	    if (n) alert(((n/t)*100)+"%");
 	  };
 	};
 	if(typeof TypingTutor_Mix_Words !== 'function') {
