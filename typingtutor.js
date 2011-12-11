@@ -160,7 +160,7 @@ jQuery(document).ready(function () {
 			if (--jQuery.typing.garrayIndex < 0) jQuery.typing.garrayIndex = jQuery.typing.garray.length - 1;
 
 			if (jQuery.typing.mix_array[jQuery.typing.garrayIndex]) {
-				jQuery.typing.gtext = TypingTutor_Mix(jQuery.typing.garray[jQuery.typing.garrayIndex]);
+						jQuery.typing.gtext = TypingTutor_MixWords(jQuery.typing.garray[jQuery.typing.garrayIndex]);
 			} else {
 				jQuery.typing.gtext = jQuery.typing.garray[jQuery.typing.garrayIndex];
 			}
@@ -471,13 +471,13 @@ jQuery(document).ready(function () {
 	};
 	if(typeof TypingTutor_Mix !== 'function') {
 		function TypingTutor_Mix(str){
-		  var s= str.split(' ');
+		  var s = str.split(' ');
 		  for(var i= 0; i<s.length;i++){
 		    var A= s[i].split(''),c1= '',c3 = '' ; //A.shift(), c3= A.pop() || '';
 		    while(A.length) c1+= A.splice(Math.floor(Math.random()*A.length), 1);
-		      s[i]= c1+c3;
+		    s[i]= c1+c3;
 		  }
-			return Mix_Words(str);
+			return TypingTutor_Mix_Words(s.join(''));
 		};
 	};
 	

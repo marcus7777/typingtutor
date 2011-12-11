@@ -18,6 +18,10 @@ function typingtutor_field_formatter_info() {
         'keyboard' => 'small', //give a default value for when the form is first loaded
       ),
     ),
+    'typingtutor_dictionary_word_finder' => array( //Machine name of the formatter
+      'label' => t('Helping people make Practice Text for the Typing Tutor'),
+      'field types' => array('text_long'), //This will only be available to text_long fields
+    ),
     'typingtutor_practice_formatter' => array( //Machine name of the formatter
       'label' => t('Practice Text for the Typing Tutor'),
       'field types' => array('text_long'), //This will only be available to text_long fields
@@ -58,9 +62,11 @@ function typingtutor_field_formatter_settings_summary($field, $instance, $view_m
     $summary = t('Use a @size keyboard', array(
       '@size'     => $settings['keyboard'],
     )); // we use t() for translation and placeholders to guard against attacks
-  } else  {
+  } elseif ($display['type'] == 'typingtutor_dictionary_word_finder') {
+	  $summary = t('Helping people make Practice Text from a list of words');
+  } else {
     $summary = t('Typing Tutor Practice Text');
-  }
+  };
   return $summary;
 }
 
@@ -103,6 +109,36 @@ function typingtutor_field_formatter_view($entity_type, $entity, $field, $instan
       $output .= '</div><div id="echo" class="echo">[ ]</div><textarea> 4 the iphone </textarea><div><button id="skip" class="button" name="skip"> skip to next line ("enter" key is shortcut)</button><button id="back" class="button" name="back">back to previous line</button></div>Count: <span id="count">0 chars</span> Accuracy: <span id="accuracy">n/a</span> Speed: <span id="speed">0 chars/min</span> <button id="reset" class="button" name="reset">reset</button>';
       $element[0]['#markup'] = $output; // Assign it to the #markup of the element
     }
+
+ 	} elseif ($display['type'] == 'typingtutor_dictionary_word_finder') {
+	  $settings = $display['settings']; // get the settings
+    foreach ($items as $delta => $item) {
+      $layout = $item['safe_value']; // Getting the actual value
+    }
+    if(isset($layout)) {
+      $layout = str_replace('&#039;',chr(39),$layout);
+      $layout =  utf8_decode($layout);
+      $words_to_show = array();
+      if (isset($_GET['letters']) && $_GET['letters'] != '') {
+	      foreach(explode("\r\n", $layout) as $line) {
+	        $okay = true;
+	        for ($i = 0; $i < strlen($line) && $okay; ++$i){
+	          if (!($line{$i} == " ")) {
+	            if (stripos($_GET['letters'],$line{$i}) === false) {
+								$okay = false;
+							}
+	          } 
+	        }
+	        if ($okay) {
+		        $words_to_show[] = $line;
+	        }
+	      }
+	      $output = '<p>'. implode (", " , $words_to_show ) . '</p>' ;
+      }
+			$output .= '<form>The letters: <input type="text" name="letters" /></form>';
+      $element[0]['#markup'] = $output; // Assign it to the #markup of the element
+    }
+		
   } else {
 
     foreach ($items as $delta => $item) {
