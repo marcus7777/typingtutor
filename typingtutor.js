@@ -160,7 +160,7 @@ jQuery(document).ready(function () {
 			if (--jQuery.typing.garrayIndex < 0) jQuery.typing.garrayIndex = jQuery.typing.garray.length - 1;
 
 			if (jQuery.typing.mix_array[jQuery.typing.garrayIndex]) {
-						jQuery.typing.gtext = TypingTutor_MixWords(jQuery.typing.garray[jQuery.typing.garrayIndex]);
+						jQuery.typing.gtext = TypingTutor_Mix(jQuery.typing.garray[jQuery.typing.garrayIndex]);
 			} else {
 				jQuery.typing.gtext = jQuery.typing.garray[jQuery.typing.garrayIndex];
 			}
@@ -477,7 +477,7 @@ jQuery(document).ready(function () {
 		    while(A.length) c1+= A.splice(Math.floor(Math.random()*A.length), 1);
 		    s[i]= c1+c3;
 		  }
-			return TypingTutor_Mix_Words(s.join(''));
+			return TypingTutor_Mix_Words(s.join(' '));
 		};
 	};
 	

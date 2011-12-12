@@ -133,9 +133,9 @@ function typingtutor_field_formatter_view($entity_type, $entity, $field, $instan
 		        $words_to_show[] = $line;
 	        }
 	      }
-	      $output = '<p>'. implode (", " , $words_to_show ) . '</p>' ;
+	      $output = '<p>'. implode (" " , $words_to_show ) . '</p>' ;
       }
-			$output .= '<form>The letters: <input type="text" name="letters" /></form>';
+			$output .= '<form>The letters: <input type="text" name="letters" value="'.$_GET['letters'].'" /></form>';
       $element[0]['#markup'] = $output; // Assign it to the #markup of the element
     }
 		
@@ -173,6 +173,13 @@ function typingtutor_field_formatter_view($entity_type, $entity, $field, $instan
 		         $output .= 'jQuery.typing.mix_array[jQuery.typing.ga] = 1;';
 		         $output .= 'jQuery.typing.garray[jQuery.typing.ga++] = '.json_encode(array_pop($part)) .';';
 		         $new = 1;
+	        } elseif ($part[0] == 'g' ) {
+		        $gen = array();
+						$gen = typingtutor_gen($part)
+						foreach ($gen as $gen_line) {
+							$output .= 'jQuery.typing.garray[jQuery.typing.ga++] = '.json_encode(array_pop($gen_line)) .';';							
+						} 
+		        $new = 1;
 		      } else {
 	          $output .= 'jQuery.typing.garray[jQuery.typing.ga++] = '.json_encode(array_pop($part)) .';';
 	          $new = 1;
@@ -197,4 +204,13 @@ function typingtutor_field_formatter_view($entity_type, $entity, $field, $instan
 function typingtutor_mapToBoard($key_code) {
 	if (($key_code>=97)&&($key_code<=122)) return ($key_code-32);
 	return $key_code;
+}
+function typingtutor_gen($part) {
+	// new_letters, letters, number_of_words, chr_per_line
+  // find dic
+  // gen word
+  // if less words make up : dddd eeee hhhh tttt and add to start
+  // mix words
+  // word wrap
+  // return array
 }
