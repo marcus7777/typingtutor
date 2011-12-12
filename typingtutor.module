@@ -175,7 +175,7 @@ function typingtutor_field_formatter_view($entity_type, $entity, $field, $instan
 		         $new = 1;
 	        } elseif ($part[0] == 'g' ) {
 		        $gen = array();
-						$gen = typingtutor_gen($part)
+						$gen = typingtutor_gen($part);
 						foreach ($gen as $gen_line) {
 							$output .= 'jQuery.typing.garray[jQuery.typing.ga++] = '.json_encode(array_pop($gen_line)) .';';							
 						} 
