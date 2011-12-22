@@ -5,45 +5,64 @@ jQuery.typing = {
 	gtarget : 0,	gpressed : 0,	ggood : 0,
 	gtotal : 0,	gtime : 0,	gkeytime : 0,
 	ghelp_array : {},	error_in_same_line :0,
-	tolerance:3,	tolerance_array: Array(),
+	tolerance:3,	tolerance_array: {},
 	mix_array: {}
 };
-
-
+var to;
 
 jQuery(document).ready(function () {
-	function setup() {
-	  setEvents();
-	  get_data_typingtutor();	
-	  jQuery.typing.garrayIndex = -1;
+	
 
-	  if((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
-	    var alerts = 0;
+	
+	function save(load){
+		jQuery.ttpath = "/?q=typingtutor/"+ location.pathname.replace(/\//g,""); 
+		if (load != 1) {
+			jQuery.save = Object();
+			jQuery.save = jQuery.extend({}, jQuery.typing);
 
-	  } else {
-	    var alerts = 1;
-	  }
-	  if(window.location.hash) {
-		  var searchString = window.location.hash;
-		  // strip off the leading '#'
-		  searchString = searchString.substring(1);
-	    var nvPairs = searchString.split("&");
+			delete jQuery.save.garray;
+			delete jQuery.save.ghelp_array;
+			delete jQuery.save.mix_array;
+			delete jQuery.save.tolerance_array;
 
-	    for (i = 0; i < nvPairs.length; i++) {
-	      var nvPair = nvPairs[i].split("=");
-	      var name = nvPair[0];
-	      var value = nvPair[1];
-	      if ('line' == name)  jQuery.typing.garrayIndex = (1 * value) - 1;
-	    }
-	    for (n = 0; n <= jQuery.typing.garrayIndex ; n++ ) {
-		    if (jQuery.typing.ghelp_array[n]) document.getElementById("help-text").innerHTML = jQuery.typing.ghelp_array[n];
-		    if (jQuery.typing.tolerance_array[n]) jQuery.typing.tolerance = jQuery.typing.tolerance_array[n];	
-	    }
+			jQuery.post(jQuery.ttpath ,jQuery.save);	
+		} else {	
+			 document.getElementById("help-text").innerHTML = "loading ...";
+			jQuery.getJSON(jQuery.ttpath, function(data) {
+		    if (data != 0) {
+					jQuery.typing.garrayIndex = data.garrayIndex * 1
+					jQuery.typing.gindex = data.gindex * 1 
+					jQuery.typing.goldPressed = data.goldPressed* 1
+					jQuery.typing.goldTarget = data.goldTarget * 1
+					jQuery.typing.gtarget = data.gtarget * 1
+					jQuery.typing.gpressed  = data.gpressed* 1
+					jQuery.typing.ggood  = data.ggood * 1
+					jQuery.typing.gtotal  = data.gtotal * 1
+					jQuery.typing.gtime  = data.gtime * 1
+					jQuery.typing.gkeytime  = data.gkeytime * 1
+					jQuery.typing.error_in_same_line  = data.error_in_same_line * 1
+					jQuery.typing.tolerance = data.tolerance * 1
+		    }
+        setEvents();
 
-	  }
-	  next();
+			  get_data_typingtutor();	
+
+			  if((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
+			    var alerts = 0;
+			  } else {
+			    var alerts = 1;
+			  }	
+				for (n = 0; n <= jQuery.typing.garrayIndex ; n++ ) {
+				  if (jQuery.typing.ghelp_array[n]) document.getElementById("help-text").innerHTML = jQuery.typing.ghelp_array[n];
+				  if (jQuery.typing.tolerance_array[n]) jQuery.typing.tolerance = jQuery.typing.tolerance_array[n];
+				}
+        if (--jQuery.typing.garrayIndex < 0) jQuery.typing.garrayIndex = jQuery.typing.garray.length - 1;
+				next();
+				
+			 });
+		}
+		
 	}
-
 	function setPatternInit() {
 
 		//#b note: once we did this using innerHTML but this caused
@@ -154,8 +173,6 @@ jQuery(document).ready(function () {
 
 		if (++jQuery.typing.garrayIndex == jQuery.typing.garray.length) jQuery.typing.garrayIndex = 0;
 
-		window.location.hash = "#line=" + jQuery.typing.garrayIndex;
-
 		if (jQuery.typing.error_in_same_line > jQuery.typing.tolerance ) {
 			if (--jQuery.typing.garrayIndex < 0) jQuery.typing.garrayIndex = jQuery.typing.garray.length - 1;
 
@@ -183,8 +200,8 @@ jQuery(document).ready(function () {
 		jQuery.typing.gpressed = 0; 
 
 		setPrompt();
+		save();
 	}
-	
   function prevPattern() {
 
 		jQuery.typing.goldTarget = jQuery.typing.gtarget;
@@ -213,6 +230,7 @@ jQuery(document).ready(function () {
 	}
 	function back(e) {
 		prev();
+		save(0);
 		return false;
 	}
 	function setEcho(c, isOK) {
@@ -459,7 +477,7 @@ jQuery(document).ready(function () {
   // let override
 	if(typeof TypingTutor_progress !== 'function') {
 		function TypingTutor_progress(t,n) {
-	    if (n) alert(((n/t)*100)+"%");
+	    if (n) jQuery("#buttons").css("background-position",((n/t)*100)+"%");
 	  };
 	};
 	if(typeof TypingTutor_Mix_Words !== 'function') {
@@ -482,6 +500,6 @@ jQuery(document).ready(function () {
 	};
 	
 	// start
-	setup(); 
+	save(1); //load
 	
 });

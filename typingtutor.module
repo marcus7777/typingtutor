@@ -4,11 +4,40 @@
  * @file
  * adds a formatter for text fields that creates a facebook button
  *
- */
- 
- /**
+ * Implements hook_menu().
+**/
+function typingtutor_menu(){
+	$items['typingtutor/%'] = array(
+    'page callback' => 'typingtutor_save',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+  );
+  return $items;
+}
+/**
+ * Implements hook_menu().
+**/
+function typingtutor_save($path){
+	
+//	header("application/json");
+	if ($_POST) {
+	  $_SESSION["typingtutor"][$path] = $_POST ;
+	  print "saved";
+	//  dsm($_SESSION["typingtutor"][$path]);
+	} else {
+	  if(isset($_SESSION["typingtutor"][$path])){
+			print json_encode( $_SESSION["typingtutor"][$path]);
+			
+		//  dsm($_SESSION["typingtutor"][$path]);
+		} else {
+			print json_encode(0);
+		}
+  }
+
+}
+/**
  * Implements hook_field_formatter_info().
- */
+**/
 function typingtutor_field_formatter_info() {
   return array(
     'typingtutor_keyboard_formatter' => array( //Machine name of the formatter
@@ -28,7 +57,6 @@ function typingtutor_field_formatter_info() {
     ),
   );
 }
-
 function typingtutor_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
   //This gets the view_mode where our settings are stored
   $display = $instance['display'][$view_mode];
@@ -51,12 +79,13 @@ function typingtutor_field_formatter_settings_form($field, $instance, $view_mode
 
   return $element;
 }
-
 /**
  * Implements hook_field_formatter_settings_summary().
- */
+**/
 function typingtutor_field_formatter_settings_summary($field, $instance, $view_mode) {
+	        $saved_place = "";
   $display = $instance['display'][$view_mode];
+
   if ($display['type'] == 'typingtutor_keyboard_formatter') {
     $settings = $display['settings'];
     $summary = t('Use a @size keyboard', array(
@@ -69,10 +98,9 @@ function typingtutor_field_formatter_settings_summary($field, $instance, $view_m
   };
   return $summary;
 }
-
 /**
  * Implements hook_field_formatter_view().
- */
+**/
 function typingtutor_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   
   $practice_text = "";$l = (int) 0;$i = (int) 0; $output = "";  $element = array(); // Initialize the var
@@ -106,8 +134,7 @@ function typingtutor_field_formatter_view($entity_type, $entity, $field, $instan
       }
 
       drupal_add_js("in_keyborad = " . json_encode($in_keyborad), 'inline');
-      $output .= '</div><div id="echo" class="echo">[ ]</div><textarea> 4 the iphone </textarea><div><button id="skip" class="button" name="skip"> skip to next line ("enter" key is shortcut)</button><button id="back" class="button" name="back">back to previous line</button></div>Count: <span id="count">0 chars</span> Accuracy: <span id="accuracy">n/a</span> Speed: <span id="speed">0 chars/min</span> <button id="reset" class="button" name="reset">reset</button>';
-      $element[0]['#markup'] = $output; // Assign it to the #markup of the element
+      $element[0]['#markup'] = $output . "</div>"; // Assign it to the #markup of the element
     }
 
  	} elseif ($display['type'] == 'typingtutor_dictionary_word_finder') {
@@ -133,7 +160,7 @@ function typingtutor_field_formatter_view($entity_type, $entity, $field, $instan
 		        $words_to_show[] = $line;
 	        }
 	      }
-	      $output = '<p>'. implode (" " , $words_to_show ) . '</p>' ;
+	      $output = '<p>'. htmlentities(implode (" " , $words_to_show )) . '</p>' ;
       }
 			$output .= '<form>The letters: <input type="text" name="letters" value="'.$_GET['letters'].'" /></form>';
       $element[0]['#markup'] = $output; // Assign it to the #markup of the element
@@ -186,14 +213,15 @@ function typingtutor_field_formatter_view($entity_type, $entity, $field, $instan
           }
         }  
       }
-    
       $output .= '};';
-    
+
+
       drupal_add_js($output, 'inline');
       drupal_add_js(drupal_get_path('module', 'typingtutor') . '/typingtutor.js', 'file');
     
       $output = "<div id='help-text' > </div> <div id='pattern' class='big'> </div>";
       $output .= '<div id="prompt" class="prompt" type=text> </div>';
+      $output .= '<div id="echo" class="echo">[ ]</div><div id=buttons ><button id="skip" class="button" name="skip"> skip to next line ("enter" key is shortcut)</button><button id="back" class="button" name="back">back to previous line</button>Count: <span id="count">0 chars</span> Accuracy: <span id="accuracy">n/a</span> Speed: <span id="speed">0 chars/min</span> <button id="reset" class="button" name="reset">reset</button></div>';
       
       $element[0]['#markup'] = $output;
   
@@ -206,6 +234,7 @@ function typingtutor_mapToBoard($key_code) {
 	return $key_code;
 }
 function typingtutor_gen($part) {
+	
 	// new_letters, letters, number_of_words, chr_per_line
   // find dic
   // gen word

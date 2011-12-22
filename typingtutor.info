@@ -3,3 +3,4 @@ description = "Adds the Typing Tutor Javascript css and displays"
 package = Fields
 core = 7.x
 files[] = typingtutor.module
+files[] = typingtutor.js

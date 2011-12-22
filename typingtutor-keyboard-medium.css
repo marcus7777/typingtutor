@@ -1,4 +1,6 @@
 #help-text {font-size: x-large;text-align: center;}
+#buttons { bottom: 0; background:url(red.png) repeat-y #999;  position: fixed;z-index: 1000;right:0;width: 100%;padding:10px 0;}
+#buttons button {  margin: 0 10px;}
 .big	{font-family: monospace;font-size: x-large;white-space: pre-wrap;text-align: center;}
 .board span {background-color: white;border-color: white;border-style: inset; border-width: 2px 1px 1px 2px;margin: 2px;padding: 2px;}
 .todo {background-color: gold;   border: 1px outset blanchedAlmond;color: gray;font-weight: normal}
